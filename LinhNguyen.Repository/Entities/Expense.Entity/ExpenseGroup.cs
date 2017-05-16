@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -8,19 +9,28 @@ using System.Threading.Tasks;
 namespace LinhNguyen.Repository.Entities.Expense.Entity
 {
     [Table("ExpenseGroup")]
-
-    public class ExpenseGroup
+    public partial class ExpenseGroup
     {
+        public ExpenseGroup()
+        {
+            Expenses = new HashSet<Expense>();
+        }
+
         public int Id { get; set; }
-
+        [Required]
+        [StringLength(100)]
         public string UserId { get; set; }
-
+        [Required]
+        [StringLength(50)]
         public string Title { get; set; }
-
+        [Required]
+        [StringLength(250)]
         public string Description { get; set; }
 
         public int ExpenseGroupStatusId { get; set; }
 
-        public ICollection<Expense> Expenses { get; set; }
+        public virtual ICollection<Expense> Expenses { get; set; }
+
+        public virtual ExpenseGroupStatus ExpenseGroupStatus { get; set; }
     }
 }

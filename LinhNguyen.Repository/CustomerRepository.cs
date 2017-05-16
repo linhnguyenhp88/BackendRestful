@@ -9,7 +9,7 @@ using LinhNguyen.Repository.ViewModels;
 
 namespace LinhNguyen.Repository
 {
-    public class CustomerRepository : ICustomerRepository
+    public class CustomerRepository : ICustomerRepository 
     {
         private SraContext _ctx;
 

@@ -62,12 +62,15 @@
     <Compile Include="Entities\Expense.Entity\ExpenseGroupStatus.cs" />
     <Compile Include="Entities\Ftag.cs" />
     <Compile Include="Entities\Menu.cs" />
+    <Compile Include="ExpenseTrackerEFRepository.cs" />
     <Compile Include="Factories\CustomerFactory.cs" />
     <Compile Include="Factories\ExpenseFactory.cs" />
     <Compile Include="Factories\ExpenseGroupFactory.cs" />
+    <Compile Include="Factories\ExpenseMasterDataFactory.cs" />
     <Compile Include="FtagRepository.cs" />
     <Compile Include="Helpers\ListExtensions.cs" />
     <Compile Include="ICustomerRepository.cs" />
+    <Compile Include="IExpenseTrackerRepository.cs" />
     <Compile Include="IFtagRepository.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Logger.cs" />
