@@ -1,4 +1,4 @@
-﻿[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(SraCRM.App_Start.NinjectWebCommon), "Start")]
+[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(SraCRM.App_Start.NinjectWebCommon), "Start")]
 [assembly: WebActivatorEx.ApplicationShutdownMethodAttribute(typeof(SraCRM.App_Start.NinjectWebCommon), "Stop")]
 
 namespace SraCRM.App_Start
@@ -7,10 +7,11 @@ namespace SraCRM.App_Start
     using System.Web;
 
     using Microsoft.Web.Infrastructure.DynamicModuleHelper;
-
+    using System.Reflection;
     using Ninject;
     using Ninject.Web.Common;
     using LinhNguyen.Repository;
+    using System.Data.Entity.Infrastructure;
 
     public static class NinjectWebCommon 
     {
@@ -41,12 +42,16 @@ namespace SraCRM.App_Start
         private static IKernel CreateKernel()
         {
             var kernel = new StandardKernel();
+            kernel.Load(Assembly.GetExecutingAssembly());
             try
             {
                 kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
                 kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
-
+                //kernel.Bind<IExpenseTrackerRepository>().To<ExpenseTrackerEFRepository>();
+                //kernel.Bind<IObjectContextAdapter>().To<LinhNguyen.Repository.DAL.SraContext>();
                 RegisterServices(kernel);
+                //System.Web.Http.GlobalConfiguration.Configuration.DependencyResolver = new Ninject.WebApi.DependencyResolver.NinjectDependencyResolver(kernel);
+                //System.Web.Http.GlobalConfiguration.Configuration.DependencyResolver = new NinjectResolver(Kernel);
                 return kernel;
             }
             catch
@@ -63,7 +68,6 @@ namespace SraCRM.App_Start
         private static void RegisterServices(IKernel kernel)
         {
             kernel.Bind<IExpenseTrackerRepository>().To<ExpenseTrackerEFRepository>();
-
         }        
     }
 }

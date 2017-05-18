@@ -5,23 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 using LinhNguyen.Repository.Entities.Expense.Entity;
 using LinhNguyen.Repository.DAL;
+using System.Data.Entity.Infrastructure;
 
 namespace LinhNguyen.Repository
 {
     public class ExpenseTrackerEFRepository : IExpenseTrackerRepository
     {
-        private readonly SraContext _ctx;
-
+        private readonly SraContext _ctx = new SraContext();
         public ExpenseTrackerEFRepository()
         {
 
         }
 
-        public ExpenseTrackerEFRepository(SraContext ctx)
-        {
-            _ctx = ctx;
-            _ctx.Configuration.LazyLoadingEnabled = true;
-        }
+        //public ExpenseTrackerEFRepository(IObjectContextAdapter ctx)
+        //{
+        //    _ctx = (SraContext)ctx;
+        //    _ctx.Configuration.LazyLoadingEnabled = true;
+        //}
 
         public RepositoryActionResult<Expense> DeleteExpense(int id)
         {
@@ -40,7 +40,7 @@ namespace LinhNguyen.Repository
 
         public ExpenseGroup GetExpenseGroup(int id)
         {
-            throw new NotImplementedException();
+            return _ctx.ExpenseGroups.Where(x => x.Id == id).FirstOrDefault();
         }
 
         public ExpenseGroup GetExpenseGroup(int id, string userId)
@@ -85,7 +85,7 @@ namespace LinhNguyen.Repository
 
         public IQueryable<Expense> GetExpenses()
         {
-            throw new NotImplementedException();
+            return _ctx.Expenses;
         }
 
         public IQueryable<Expense> GetExpenses(int expenseGroupId)
