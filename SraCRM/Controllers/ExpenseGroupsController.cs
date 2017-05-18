@@ -16,10 +16,10 @@ namespace SraCRM.Controllers
 
         private readonly ExpenseGroupFactory _expenseGroupFactory = new ExpenseGroupFactory();
 
-        //public ExpenseGroupsController()
-        //{
-        //    _expenseTrackerRepository = new ExpenseTrackerEFRepository(new LinhNguyen.Repository.DAL.SraContext());
-        //}
+        public ExpenseGroupsController()
+        {
+            _expenseTrackerRepository = new ExpenseTrackerEFRepository(new LinhNguyen.Repository.DAL.SraContext());
+        }
 
         public ExpenseGroupsController(IExpenseTrackerRepository expenseTrackerRepository)
         {
