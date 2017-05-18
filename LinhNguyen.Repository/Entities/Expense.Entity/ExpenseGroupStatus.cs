@@ -17,11 +17,12 @@ namespace LinhNguyen.Repository.Entities.Expense.Entity
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int Id { get; set; }
+        public int Id { get; set; }uuuuuuuu
         [Required]
         [StringLength(50)]
         public string Description { get; set; }
 
         public virtual ICollection<ExpenseGroup> ExpenseGroups { get; set; }
+        
     }
 }
