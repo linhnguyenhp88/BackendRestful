@@ -16,7 +16,6 @@ namespace LinhNguyen.Repository.Entities.Expense.Entity
             ExpenseGroups = new HashSet<ExpenseGroup>();
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
         [Required]
         [StringLength(50)]
