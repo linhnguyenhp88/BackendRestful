@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LinhNguyen.Repository.Entities.Expense.Entity;
 using LinhNguyen.Repository.DAL;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity;
 
 namespace LinhNguyen.Repository
 {
@@ -26,7 +27,24 @@ namespace LinhNguyen.Repository
 
         public RepositoryActionResult<Expense> DeleteExpenseGroup(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var eg = _ctx.ExpenseGroups.Where(x => x.Id == id).FirstOrDefault();
+                if (eg != null)
+                {
+                    _ctx.ExpenseGroups.Remove(eg);
+                    _ctx.SaveChanges();
+
+                    return new RepositoryActionResult<Expense>(null, RepositoryActionStatus.Deleted);
+                }
+
+                return new RepositoryActionResult<Expense>(null, RepositoryActionStatus.NotFound);
+            }
+            catch (Exception ex)
+            {
+
+                return new RepositoryActionResult<Expense>(null, RepositoryActionStatus.Error, ex);
+            }
         }
       
         public Expense Getexpense(int id, int? expenseGroupId = default(int?))
@@ -126,12 +144,30 @@ namespace LinhNguyen.Repository
         {
             try
             {
-                _ctx.ExpenseGroups.Attach
-            }
-            catch (Exception)
-            {
+                var existingEG = _ctx.ExpenseGroups.Where(x => x.Id == eg.Id);
+                if (existingEG == null)
+                {
+                    return new RepositoryActionResult<ExpenseGroup>(eg, RepositoryActionStatus.NotFound);
+                }
 
-                throw;
+                _ctx.Entry(existingEG).State = EntityState.Detached;
+                _ctx.ExpenseGroups.Attach(eg);
+                _ctx.Entry(eg).State = EntityState.Modified;
+
+                var result = _ctx.SaveChanges();
+
+                if (result > 0)
+                {
+                    return new RepositoryActionResult<ExpenseGroup>(eg, RepositoryActionStatus.Updated);
+                }
+                else
+                {
+                    return new RepositoryActionResult<ExpenseGroup>(eg, RepositoryActionStatus.NothingModified, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new RepositoryActionResult<ExpenseGroup>(null, RepositoryActionStatus.Error, ex);
             }
         }   
     }

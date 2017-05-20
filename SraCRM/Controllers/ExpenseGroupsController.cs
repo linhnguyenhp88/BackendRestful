@@ -1,5 +1,6 @@
 ﻿using LinhNguyen.Repository;
 using LinhNguyen.Repository.Factories;
+using Marvin.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,6 +109,91 @@ namespace SraCRM.Controllers
 
                 var eg = _expenseGroupFactory.CreateExpenseGroup(expenseGroup);
                 var result = _expenseTrackerRepository.UpdateExpenseGroup(eg);
+
+                if (result.Status == RepositoryActionStatus.Updated)
+                {
+                    var updatedExpenseGroup = _expenseGroupFactory.CreateExpenseGroup(result.Entity);
+
+                    return Ok(updatedExpenseGroup);
+                }
+                else if (result.Status == RepositoryActionStatus.NotFound)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
+        [Route("ExpenseGroup/{id:int}")]
+        [HttpPatch]
+        public IHttpActionResult Patch(int id, 
+            [FromBody]JsonPatchDocument<LinhNguyen.DTO.Expense.ExpenseGroup> expenseGroupPatchDocument)
+        {
+            try
+            {
+                if (expenseGroupPatchDocument == null)
+                {
+                    return BadRequest();
+                }
+
+                var expenseGroup = _expenseTrackerRepository.GetExpenseGroup(id);
+
+                if (expenseGroup == null)
+                {
+                    return NotFound();
+                }
+
+                var eg = _expenseGroupFactory.CreateExpenseGroup(expenseGroup);
+                expenseGroupPatchDocument.ApplyTo(eg);
+
+                var result = _expenseTrackerRepository.UpdateExpenseGroup(_expenseGroupFactory.CreateExpenseGroup(eg));
+
+                if (result.Status == RepositoryActionStatus.Updated)
+                {
+                    var patchedExpenseGroup = _expenseGroupFactory.CreateExpenseGroup(result.Entity);
+                    return Ok(patchedExpenseGroup);
+                }
+
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
+        [Route("ExpenseGroup/{id:int}")]
+        [HttpDelete]
+        public IHttpActionResult Delete(int id)
+        {
+            try
+            {
+                var result = _expenseTrackerRepository.DeleteExpenseGroup(id);
+
+                if (result.Status == RepositoryActionStatus.Deleted)
+                {
+                    return StatusCode(HttpStatusCode.NoContent);
+                }
+                else if(result.Status == RepositoryActionStatus.NotFound)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+
             }
             catch (Exception)
             {

@@ -15,7 +15,6 @@ namespace LinhNguyen.Repository.Factories
 
         public ExpenseGroupFactory()
         {
-
         }
 
         public ExpenseGroup CreateExpenseGroup(DTO.Expense.ExpenseGroup expenseGroup)
