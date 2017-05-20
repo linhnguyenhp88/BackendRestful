@@ -17,7 +17,7 @@ namespace LinhNguyen.Repository.Entities.Expense.Entity
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int Id { get; set; }uuuuuuuu
+        public int Id { get; set; }
         [Required]
         [StringLength(50)]
         public string Description { get; set; }

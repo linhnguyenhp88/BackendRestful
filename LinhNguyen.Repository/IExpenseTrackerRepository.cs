@@ -26,6 +26,6 @@ namespace LinhNguyen.Repository
         RepositoryActionResult<Entities.Expense.Entity.Expense> InsertExpense(Entities.Expense.Entity.Expense e);
         RepositoryActionResult<Entities.Expense.Entity.ExpenseGroup> InsertExpenseGroup(Entities.Expense.Entity.ExpenseGroup eg);
         RepositoryActionResult<Entities.Expense.Entity.Expense> UpdateExpense(Entities.Expense.Entity.Expense e);
-        RepositoryActionResult<Entities.Expense.Entity.ExpenseGroup> UpdateExpenseGroup(Entities.Expense.Entity.Expense eg);
+        RepositoryActionResult<Entities.Expense.Entity.ExpenseGroup> UpdateExpenseGroup(Entities.Expense.Entity.ExpenseGroup eg);
     }
 }

@@ -11,18 +11,14 @@ namespace LinhNguyen.Repository
 {
     public class ExpenseTrackerEFRepository : IExpenseTrackerRepository
     {
-        private readonly SraContext _ctx = new SraContext();
-        public ExpenseTrackerEFRepository()
+        private readonly SraContext _ctx;
+
+        public ExpenseTrackerEFRepository(SraContext ctx)
         {
-
+            _ctx = ctx;
+            _ctx.Configuration.LazyLoadingEnabled = true;
         }
-
-        //public ExpenseTrackerEFRepository(IObjectContextAdapter ctx)
-        //{
-        //    _ctx = (SraContext)ctx;
-        //    _ctx.Configuration.LazyLoadingEnabled = true;
-        //}
-
+       
         public RepositoryActionResult<Expense> DeleteExpense(int id)
         {
             throw new NotImplementedException();
@@ -100,7 +96,25 @@ namespace LinhNguyen.Repository
 
         public RepositoryActionResult<ExpenseGroup> InsertExpenseGroup(ExpenseGroup eg)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _ctx.ExpenseGroups.Add(eg);
+                var result = _ctx.SaveChanges();
+
+                if (result > 0)
+                {
+                    return new RepositoryActionResult<ExpenseGroup>(eg, RepositoryActionStatus.Created);
+                }
+                else
+                {
+                    return new RepositoryActionResult<ExpenseGroup>(eg, RepositoryActionStatus.NothingModified);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return new RepositoryActionResult<ExpenseGroup>(null, RepositoryActionStatus.Error, ex);
+            }
         }
 
         public RepositoryActionResult<Expense> UpdateExpense(Expense e)
@@ -108,9 +122,17 @@ namespace LinhNguyen.Repository
             throw new NotImplementedException();
         }
 
-        public RepositoryActionResult<ExpenseGroup> UpdateExpenseGroup(Expense eg)
+        public RepositoryActionResult<ExpenseGroup> UpdateExpenseGroup(ExpenseGroup eg)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                _ctx.ExpenseGroups.Attach
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }   
     }
 }

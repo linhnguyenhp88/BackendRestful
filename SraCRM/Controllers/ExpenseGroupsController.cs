@@ -13,17 +13,13 @@ namespace SraCRM.Controllers
     public class ExpenseGroupsController : ApiController
     {
         private readonly IExpenseTrackerRepository _expenseTrackerRepository;
-
-        private readonly ExpenseGroupFactory _expenseGroupFactory = new ExpenseGroupFactory();
-
-        public ExpenseGroupsController()
-        {
-            _expenseTrackerRepository = new ExpenseTrackerEFRepository(new LinhNguyen.Repository.DAL.SraContext());
-        }
-
-        public ExpenseGroupsController(IExpenseTrackerRepository expenseTrackerRepository)
+        private readonly ExpenseGroupFactory _expenseGroupFactory;
+        private const int maxPageSize = 10;
+       
+        public ExpenseGroupsController(IExpenseTrackerRepository expenseTrackerRepository, ExpenseGroupFactory expenseGroupFactory)
         {
             _expenseTrackerRepository = expenseTrackerRepository;
+            _expenseGroupFactory = expenseGroupFactory;
         }
 
         [Route("ExpenseGroups")]
@@ -91,6 +87,27 @@ namespace SraCRM.Controllers
                 }
 
                 return BadRequest();
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+        [Route("ExpenseGroup/{id:int}")]
+        [HttpPut]
+        public IHttpActionResult Put([FromBody] LinhNguyen.DTO.Expense.ExpenseGroup expenseGroup)
+        {
+            try
+            {
+                if (expenseGroup == null)
+                {
+                    return BadRequest();
+                }
+
+                var eg = _expenseGroupFactory.CreateExpenseGroup(expenseGroup);
+                var result = _expenseTrackerRepository.UpdateExpenseGroup(eg);
             }
             catch (Exception)
             {

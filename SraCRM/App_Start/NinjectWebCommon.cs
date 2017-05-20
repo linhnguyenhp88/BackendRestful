@@ -12,6 +12,7 @@ namespace SraCRM.App_Start
     using Ninject.Web.Common;
     using LinhNguyen.Repository;
     using System.Data.Entity.Infrastructure;
+    using LinhNguyen.Repository.Factories;
 
     public static class NinjectWebCommon 
     {
@@ -67,7 +68,9 @@ namespace SraCRM.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
+            kernel.Bind<IObjectContextAdapter>().To<LinhNguyen.Repository.DAL.SraContext>();
             kernel.Bind<IExpenseTrackerRepository>().To<ExpenseTrackerEFRepository>();
+            kernel.Bind<ExpenseGroupFactory>().ToSelf();
         }        
     }
 }
