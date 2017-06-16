@@ -19,3 +19,4 @@ namespace LinhNguyen.DTO.Expense
         public int ExpenseGroupId { get; set; }
     }
 }
+ 

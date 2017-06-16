@@ -98,7 +98,7 @@ namespace SraCRM.Controllers
 
         [Route("ExpenseGroup/{id:int}")]
         [HttpPut]
-        public IHttpActionResult Put([FromBody] LinhNguyen.DTO.Expense.ExpenseGroup expenseGroup)
+        public IHttpActionResult Put(int id, [FromBody] LinhNguyen.DTO.Expense.ExpenseGroup expenseGroup)
         {
             try
             {
@@ -125,7 +125,7 @@ namespace SraCRM.Controllers
                     return BadRequest();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 return InternalServerError();
@@ -133,7 +133,7 @@ namespace SraCRM.Controllers
         }
 
 
-        [Route("ExpenseGroup/{id:int}")]
+        [Route("ExpenseGroup/{id}")]
         [HttpPatch]
         public IHttpActionResult Patch(int id, 
             [FromBody]JsonPatchDocument<LinhNguyen.DTO.Expense.ExpenseGroup> expenseGroupPatchDocument)
@@ -153,6 +153,7 @@ namespace SraCRM.Controllers
                 }
 
                 var eg = _expenseGroupFactory.CreateExpenseGroup(expenseGroup);
+
                 expenseGroupPatchDocument.ApplyTo(eg);
 
                 var result = _expenseTrackerRepository.UpdateExpenseGroup(_expenseGroupFactory.CreateExpenseGroup(eg));
@@ -165,7 +166,7 @@ namespace SraCRM.Controllers
 
                 return BadRequest();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 return InternalServerError();

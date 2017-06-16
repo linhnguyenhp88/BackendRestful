@@ -49,12 +49,12 @@ namespace LinhNguyen.Repository
       
         public Expense Getexpense(int id, int? expenseGroupId = default(int?))
         {
-            return _ctx.Expenses.Where(e => e.Id == id && (expenseGroupId == null || e.ExpenseGroupId == expenseGroupId)).FirstOrDefault();
+            return _ctx.Expenses.FirstOrDefault(e => e.Id == id && (expenseGroupId == null || e.ExpenseGroupId == expenseGroupId));
         }
 
         public ExpenseGroup GetExpenseGroup(int id)
         {
-            return _ctx.ExpenseGroups.Where(x => x.Id == id).FirstOrDefault();
+            return _ctx.ExpenseGroups.FirstOrDefault(x => x.Id == id);
         }
 
         public ExpenseGroup GetExpenseGroup(int id, string userId)
@@ -104,7 +104,24 @@ namespace LinhNguyen.Repository
 
         public IQueryable<Expense> GetExpenses(int expenseGroupId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var correctGroup = _ctx.ExpenseGroups.Where(eg => eg.Id == expenseGroupId).FirstOrDefault();
+
+                if (correctGroup != null)
+                {
+                    return _ctx.Expenses.Where(e => e.ExpenseGroupId == expenseGroupId);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         public RepositoryActionResult<Expense> InsertExpense(Expense e)
@@ -144,7 +161,7 @@ namespace LinhNguyen.Repository
         {
             try
             {
-                var existingEG = _ctx.ExpenseGroups.Where(x => x.Id == eg.Id);
+                var existingEG = _ctx.ExpenseGroups.Where(x => x.Id == eg.Id).FirstOrDefault();
                 if (existingEG == null)
                 {
                     return new RepositoryActionResult<ExpenseGroup>(eg, RepositoryActionStatus.NotFound);
