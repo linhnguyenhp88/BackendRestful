@@ -71,6 +71,7 @@ namespace SraCRM.App_Start
             kernel.Bind<IObjectContextAdapter>().To<LinhNguyen.Repository.DAL.SraContext>();
             kernel.Bind<IExpenseTrackerRepository>().To<ExpenseTrackerEFRepository>();
             kernel.Bind<ExpenseGroupFactory>().ToSelf();
+            kernel.Bind<ExpenseMasterDataFactory>().ToSelf();
         }        
     }
 }

@@ -22,7 +22,22 @@ namespace LinhNguyen.Repository
        
         public RepositoryActionResult<Expense> DeleteExpense(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var exp = _ctx.Expenses.Where(e => e.Id == id).FirstOrDefault();
+                if (exp != null)
+                {
+                    _ctx.Expenses.Remove(exp);
+                    _ctx.SaveChanges();
+                    return new RepositoryActionResult<Expense>(null, RepositoryActionStatus.Deleted);
+                }
+                return new RepositoryActionResult<Expense>(null, RepositoryActionStatus.NotFound);
+            }
+            catch (Exception ex)
+            {
+
+                return new RepositoryActionResult<Expense>(null, RepositoryActionStatus.Error, ex);
+            }
         }
 
         public RepositoryActionResult<Expense> DeleteExpenseGroup(int id)
@@ -79,7 +94,7 @@ namespace LinhNguyen.Repository
 
         public IQueryable<ExpenseGroupStatus> GetExpenseGroupStatuses()
         {
-            throw new NotImplementedException();
+            return _ctx.ExpenseGroupStatuses;
         }
 
         public IQueryable<ExpenseGroup> GetExpenseGroupWithExpenses()
@@ -126,7 +141,24 @@ namespace LinhNguyen.Repository
 
         public RepositoryActionResult<Expense> InsertExpense(Expense e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _ctx.Expenses.Add(e);
+                var result = _ctx.SaveChanges();
+                if (result > 0)
+                {
+                    return new RepositoryActionResult<Expense>(e, RepositoryActionStatus.Created);
+                }
+                else
+                {
+                    return new RepositoryActionResult<Expense>(e, RepositoryActionStatus.NothingModified);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return new RepositoryActionResult<Expense>(null, RepositoryActionStatus.Error, ex);
+            }
         }
 
         public RepositoryActionResult<ExpenseGroup> InsertExpenseGroup(ExpenseGroup eg)
@@ -154,7 +186,35 @@ namespace LinhNguyen.Repository
 
         public RepositoryActionResult<Expense> UpdateExpense(Expense e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var existingExpense = _ctx.Expenses.Where(x => x.Id == e.Id).FirstOrDefault();
+
+                if (existingExpense == null)
+                {
+                    return new RepositoryActionResult<Expense>(e, RepositoryActionStatus.NotFound);
+                }             
+
+                _ctx.Entry(existingExpense).State = EntityState.Detached;
+                _ctx.Expenses.Attach(e);
+                _ctx.Entry(e).State = EntityState.Modified;
+                var result = _ctx.SaveChanges();
+
+                if (result > 0)
+                {
+                    return new RepositoryActionResult<Expense>(e, RepositoryActionStatus.Updated);
+                }
+                else
+                {
+                    return new RepositoryActionResult<Expense>(e, RepositoryActionStatus.NothingModified, null);
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                return new RepositoryActionResult<Expense>(null, RepositoryActionStatus.Error, ex);
+            }
         }
 
         public RepositoryActionResult<ExpenseGroup> UpdateExpenseGroup(ExpenseGroup eg)

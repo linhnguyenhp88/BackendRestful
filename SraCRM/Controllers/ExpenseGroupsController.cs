@@ -1,12 +1,14 @@
 ﻿using LinhNguyen.Repository;
 using LinhNguyen.Repository.Factories;
 using Marvin.JsonPatch;
+using SraCRM.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Routing;
 
 namespace SraCRM.Controllers
 {
@@ -25,17 +27,60 @@ namespace SraCRM.Controllers
 
         [Route("ExpenseGroups")]
         [HttpGet]
-        public IHttpActionResult Get()
+        public IHttpActionResult Get(string sort = "id", string status = null, string userId = null, 
+            int page = 1, int pageSize = maxPageSize)
         {
             try
             {
-                var expenseGroups = _expenseTrackerRepository.GetExpenseGroups();
+                int statusId = -1;
+                if (status != null)
+                {
+                    switch (status.ToLower())
+                    {
+                        case "open": statusId = 1;
+                            break;
+                        case "confirmed": statusId = 2;
+                            break;
+                        case "processed": statusId = 3;
+                            break;
+                        default:
+                            break;
+                    }
+                }
 
-                return Ok(expenseGroups.ToList()
-                    .Select(eg => _expenseGroupFactory.CreateExpenseGroup(eg)));
+                //var expenseGroups = _expenseTrackerRepository.GetExpenseGroups();
 
+                //return Ok(expenseGroups.ToList()
+                //    .Select(eg => _expenseGroupFactory.CreateExpenseGroup(eg)));
+
+                var expenseGroups = _expenseTrackerRepository.GetExpenseGroups()
+                    .ApplySort(sort)
+                    .Where(eg => (statusId == -1 || eg.ExpenseGroupStatusId == statusId))
+                    .Where(eg => (userId == null || eg.UserId == userId));
+
+                if (pageSize > maxPageSize)
+                {
+                    pageSize = maxPageSize;
+                }
+
+                var totalCount = expenseGroups.Count();
+                var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+                var urlHelper = new UrlHelper(Request);
+                var prevLink = page > 1 ? urlHelper.Link("ExpenseGroupsList",
+                    new { page = page - 1, pageSize = pageSize, sort = sort, status = status, userId = userId }) : "";
+                var newLink = page < totalPages ? urlHelper.Link("ExpenseGroupsList", 
+                    new {page = page +1 , pageSize = pageSize , sort = sort, status = status, userId = userId}) : "";
+
+                var aginationHeader = new
+                {
+                    currentPage = page,
+                    pageSize = pageSize
+                };
+
+                return Ok(expenseGroups);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 return InternalServerError();

@@ -1,5 +1,6 @@
 ﻿using LinhNguyen.Repository;
 using LinhNguyen.Repository.Factories;
+using Marvin.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,6 +83,137 @@ namespace SraCRM.Controllers
 
             }
             catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+        [Route("expenses")]
+        [HttpPost]
+        public IHttpActionResult Post([FromBody]LinhNguyen.DTO.Expense.Expense expense)
+        {
+            try
+            {
+                if (expense == null)
+                {
+                    return BadRequest();
+                }
+
+                // map
+                var exp = _expenseFactory.CreateExpense(expense);
+
+                var result = _expenseRepository.InsertExpense(exp);
+                if (result.Status == RepositoryActionStatus.Created)
+                {
+                    // map to dto
+                    var newExp = _expenseFactory.CreateExpense(result.Entity);
+                    return Created<LinhNguyen.DTO.Expense.Expense>(Request.RequestUri + "/" + newExp.Id.ToString(), newExp);
+                }
+
+                return BadRequest();
+
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
+        }
+
+       
+        [Route("expenses/{id}")]
+        [HttpPut]
+        public IHttpActionResult Put(int id, [FromBody]LinhNguyen.DTO.Expense.Expense expense)
+        {
+            try
+            {
+                if (expense == null)
+                {
+                    return BadRequest();
+                }
+
+                // map
+                var exp = _expenseFactory.CreateExpense(expense);
+
+                var result = _expenseRepository.UpdateExpense(exp);
+                if (result.Status == RepositoryActionStatus.Updated)
+                {
+                    // map to dto
+                    var updatedExpense = _expenseFactory.CreateExpense(result.Entity);
+                    return Ok(updatedExpense);
+                }
+                else if (result.Status == RepositoryActionStatus.NotFound)
+                {
+                    return NotFound();
+                }
+
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError();
+            }
+        }
+
+        [Route("expenses/{id}")]
+        [HttpDelete]
+        public IHttpActionResult Delete(int id)
+        {
+            try
+            {
+                var result = _expenseRepository.DeleteExpense(id);
+                if (result.Status == RepositoryActionStatus.Deleted)
+                {
+                    return StatusCode(HttpStatusCode.NoContent);
+                }
+                else if(result.Status == RepositoryActionStatus.NotFound)
+                {
+                    return NotFound();
+                }
+
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+        [Route("expenses/{id}")]
+        [HttpPatch]
+        public IHttpActionResult Patch(int id, [FromBody]JsonPatchDocument<LinhNguyen.DTO.Expense.Expense> expensePatchDocument)
+        {
+            try
+            {
+                if (expensePatchDocument == null)
+                {
+                    return BadRequest();
+                }
+
+                var expense = _expenseRepository.Getexpense(id);
+
+                if (expense == null)
+                {
+                    return NotFound();
+                }
+
+                var exp = _expenseFactory.CreateExpense(expense);
+
+                expensePatchDocument.ApplyTo(exp);
+
+                var result = _expenseRepository.UpdateExpense(_expenseFactory.CreateExpense(exp));
+
+                if (result.Status == RepositoryActionStatus.Updated)
+                {
+                    var updateExpense = _expenseFactory.CreateExpense(result.Entity);
+
+                    return Ok(updateExpense);
+                }
+
+                return BadRequest();
+            }
+            catch (Exception ex)
             {
 
                 return InternalServerError();
