@@ -25,7 +25,7 @@ namespace SraCRM.Controllers
             _expenseGroupFactory = expenseGroupFactory;
         }
 
-        [Route("ExpenseGroups")]
+        [Route("ExpenseGroups", Name = "ExpenseGroupsList")]
         [HttpGet]
         public IHttpActionResult Get(string sort = "id", string status = null, string userId = null, 
             int page = 1, int pageSize = maxPageSize)
