@@ -1,12 +1,16 @@
 ﻿using LinhNguyen.Repository;
+using LinhNguyen.Repository.Entities.Expense.Entity;
 using LinhNguyen.Repository.Factories;
 using Marvin.JsonPatch;
+using SraCRM.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
+using System.Web.Http.Routing;
 
 namespace SraCRM.Controllers
 {
@@ -15,6 +19,7 @@ namespace SraCRM.Controllers
     {
         private readonly IExpenseTrackerRepository _expenseRepository;
         private readonly ExpenseFactory _expenseFactory;
+        private const int maxPageSize = 10;
 
         public ExpensesController(IExpenseTrackerRepository expenseRepository, ExpenseFactory expenseFactory)
         {
@@ -23,12 +28,30 @@ namespace SraCRM.Controllers
         }
 
 
-        [Route("expensegroups/{expenseGroupId}/expenses")]
+        [Route("expensegroups/{expenseGroupId}/expenses", Name = "ExpensesForGroup")]
         [HttpGet]
-        public IHttpActionResult Get(int expenseGroupId)
+        public IHttpActionResult Get(int expenseGroupId, string fields = null, string sort = "date"
+            , int page = 1, int pageSize = maxPageSize)
         {
             try
             {
+                //var expenses = _expenseRepository.GetExpenses(expenseGroupId);
+
+                //if (expenses == null)
+                //{
+                //    return NotFound();
+                //}
+
+                //var expenseResult = expenses.ToList().Select(exp => _expenseFactory.CreateExpense(exp));
+
+                //return Ok(expenseResult);
+
+                var lstOfFielfs = new List<string>();
+
+                if (fields != null)
+                {
+                    lstOfFielfs = fields.ToLower().Split(',').ToList();                 
+                }
                 var expenses = _expenseRepository.GetExpenses(expenseGroupId);
 
                 if (expenses == null)
@@ -36,9 +59,41 @@ namespace SraCRM.Controllers
                     return NotFound();
                 }
 
-                var expenseResult = expenses.ToList().Select(exp => _expenseFactory.CreateExpense(exp));
+                if (pageSize > maxPageSize)
+                {
+                    pageSize = maxPageSize;
+                }
 
-                return Ok(expenseResult);
+                var totalCount = expenses.Count();
+                var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+                var urlHepler = new UrlHelper(Request);
+
+                var preLink = page > 1 ? urlHepler.Link("ExpensesForGroup",
+                    new { page = page - 1, pageSize = pageSize, expenseGroupId = expenseGroupId, fields = fields, sort = sort }) : "";
+                var nextLink = page < totalPages ? urlHepler.Link("ExpensesForGroup",
+                    new { page = page + 1, pageSize = pageSize, expenseGroupId = expenseGroupId, fields = fields, sort }) : "";
+
+                var paginationHeader = new
+                {
+                    currentPage = page,
+                    pageSize = pageSize,
+                    totalCount = totalCount,
+                    totalPages = totalPages,
+                    previosPageLink = preLink,
+                    nextPageLink = nextLink
+                };
+
+                HttpContext.Current.Response.Headers.Add("X-Pagination",
+                    Newtonsoft.Json.JsonConvert.SerializeObject(paginationHeader));
+
+                var expensesResult = expenses.ApplySort(sort)
+                    .Skip(pageSize * (page - 1))
+                    .Take(pageSize)
+                    .ToList()
+                    .Select(exp => _expenseFactory.CreateDataShapedObject(exp, lstOfFielfs));
+
+                return Ok(expensesResult);
             }
             catch (Exception ex)
             {
@@ -51,11 +106,44 @@ namespace SraCRM.Controllers
         [Route("expensegroups/{expenseGroupId}/expenses/{id}")]
         [Route("expenses/{id}")]
         [HttpGet]
-        public IHttpActionResult Get(int id, int? expenseGroupId = null)
+        public IHttpActionResult Get(int id, int? expenseGroupId = null, string fields = null)
         {
             try
             {
-                LinhNguyen.Repository.Entities.Expense.Entity.Expense expense = null;
+                //LinhNguyen.Repository.Entities.Expense.Entity.Expense expense = null;
+
+                //if (expenseGroupId == null)
+                //{
+                //    expense = _expenseRepository.Getexpense(id);
+                //}
+                //else
+                //{
+                //    var expensesForGroup = _expenseRepository.GetExpenses((int)expenseGroupId);
+
+                //    if (expensesForGroup != null)
+                //    {
+                //        expense = expensesForGroup.FirstOrDefault(eg => eg.Id == id);
+                //    }
+                //}
+
+                //if (expense != null)
+                //{
+                //    var returnValue = _expenseFactory.CreateExpense(expense);
+                //    return Ok(returnValue);
+                //}
+                //else
+                //{
+                //    return NotFound();
+                //}
+
+
+                var lstOfFields = new List<string>();
+
+                if (fields == null)
+                {
+                    lstOfFields = fields.ToLower().Split(',').ToList();
+                }
+                Expense expense = null;
 
                 if (expenseGroupId == null)
                 {
@@ -67,13 +155,14 @@ namespace SraCRM.Controllers
 
                     if (expensesForGroup != null)
                     {
-                        expense = expensesForGroup.FirstOrDefault(eg => eg.Id == id);
+                        expense = expensesForGroup.Where(eg => eg.Id == id).FirstOrDefault();
                     }
                 }
 
                 if (expense != null)
                 {
-                    var returnValue = _expenseFactory.CreateExpense(expense);
+                    var returnValue = _expenseFactory.CreateDataShapedObject(expense, lstOfFields);
+
                     return Ok(returnValue);
                 }
                 else

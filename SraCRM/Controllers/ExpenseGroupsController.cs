@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Routing;
 
@@ -72,13 +73,19 @@ namespace SraCRM.Controllers
                 var newLink = page < totalPages ? urlHelper.Link("ExpenseGroupsList", 
                     new {page = page +1 , pageSize = pageSize , sort = sort, status = status, userId = userId}) : "";
 
-                var aginationHeader = new
+                var paginationHeader = new
                 {
                     currentPage = page,
-                    pageSize = pageSize
+                    pageSize = pageSize,
+                    totalCount = totalCount,
+                    totalPages = totalPages,
+                    previousPageLink = prevLink,
+                    nextPageLink = newLink
                 };
 
-                return Ok(expenseGroups);
+                HttpContext.Current.Response.Headers.Add("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(paginationHeader));
+
+                return Ok(expenseGroups.Skip(pageSize*(page-1)).Take(pageSize).ToList().Select(eg => _expenseGroupFactory.CreateExpenseGroup(eg)));
             }
             catch (Exception ex)
             {
