@@ -28,11 +28,20 @@ namespace SraCRM.Controllers
 
         [Route("ExpenseGroups", Name = "ExpenseGroupsList")]
         [HttpGet]
-        public IHttpActionResult Get(string sort = "id", string status = null, string userId = null, 
+        public IHttpActionResult Get(string fields,string sort = "id", string status = null, string userId = null, 
             int page = 1, int pageSize = maxPageSize)
         {
             try
             {
+                bool includeExpenses = false;
+                var lstOfFields = new List<string>();
+                //We sholud include expenses when fields-string contains "expenses", or "expenses.id",...
+                if (fields != null)
+                {
+                    lstOfFields = fields.ToLower().Split(',').ToList();
+                    includeExpenses = lstOfFields.Any(f => f.Contains("expenses"));
+                }
+
                 int statusId = -1;
                 if (status != null)
                 {
@@ -54,10 +63,16 @@ namespace SraCRM.Controllers
                 //return Ok(expenseGroups.ToList()
                 //    .Select(eg => _expenseGroupFactory.CreateExpenseGroup(eg)));
 
-                var expenseGroups = _expenseTrackerRepository.GetExpenseGroups()
-                    .ApplySort(sort)
-                    .Where(eg => (statusId == -1 || eg.ExpenseGroupStatusId == statusId))
-                    .Where(eg => (userId == null || eg.UserId == userId));
+                IQueryable<LinhNguyen.Repository.Entities.Expense.Entity.ExpenseGroup> expenseGroups = null;
+                if (includeExpenses)
+                {
+                    expenseGroups = _expenseTrackerRepository.GetExpenseGroupWithExpenses();
+                }
+
+                //var expenseGroups = _expenseTrackerRepository.GetExpenseGroups()
+                //    .ApplySort(sort)
+                //    .Where(eg => (statusId == -1 || eg.ExpenseGroupStatusId == statusId))
+                //    .Where(eg => (userId == null || eg.UserId == userId));
 
                 if (pageSize > maxPageSize)
                 {
