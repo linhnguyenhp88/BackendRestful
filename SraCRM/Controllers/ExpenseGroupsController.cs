@@ -68,11 +68,14 @@ namespace SraCRM.Controllers
                 {
                     expenseGroups = _expenseTrackerRepository.GetExpenseGroupWithExpenses();
                 }
-
-                //var expenseGroups = _expenseTrackerRepository.GetExpenseGroups()
-                //    .ApplySort(sort)
-                //    .Where(eg => (statusId == -1 || eg.ExpenseGroupStatusId == statusId))
-                //    .Where(eg => (userId == null || eg.UserId == userId));
+                else
+                {
+                    expenseGroups = _expenseTrackerRepository.GetExpenseGroups();
+                }
+                     expenseGroups = _expenseTrackerRepository.GetExpenseGroups()
+                    .ApplySort(sort)
+                    .Where(eg => (statusId == -1 || eg.ExpenseGroupStatusId == statusId))
+                    .Where(eg => (userId == null || eg.UserId == userId));
 
                 if (pageSize > maxPageSize)
                 {
@@ -100,7 +103,8 @@ namespace SraCRM.Controllers
 
                 HttpContext.Current.Response.Headers.Add("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(paginationHeader));
 
-                return Ok(expenseGroups.Skip(pageSize*(page-1)).Take(pageSize).ToList().Select(eg => _expenseGroupFactory.CreateExpenseGroup(eg)));
+                //return Ok(expenseGroups.Skip(pageSize*(page-1)).Take(pageSize).ToList().Select(eg => _expenseGroupFactory.CreateExpenseGroup(eg)));
+                return Ok(expenseGroups.Skip(pageSize * (page - 1)).Take(pageSize).ToList().Select(eg => _expenseGroupFactory.CreateDataShapedDateObject( eg, lstOfFields)));
             }
             catch (Exception ex)
             {

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,10 +44,10 @@ namespace LinhNguyen.Repository.Factories
             };
         }
 
-        public object CreateDataShapedDateObject(DTO.Expense.ExpenseGroup expenseGroup, List<string> lstFields)
+        public object CreateDataShapedDateObject(LinhNguyen.Repository.Entities.Expense.Entity.ExpenseGroup expenseGroup, List<string> lstFields)
             => CreateDataShapedDateObject(CreateExpenseGroup(expenseGroup), lstFields);
 
-        private object CreateDataShapedDateObject(ExpenseGroup expenseGroup, List<string> lstFields)
+        private object CreateDataShapedDateObject(LinhNguyen.DTO.Expense.ExpenseGroup expenseGroup, List<string> lstFields)
         {
             var lstOfFieldsToWorkWith = new List<string>(lstFields);
 
@@ -73,8 +74,27 @@ namespace LinhNguyen.Repository.Factories
 
 
                 ExpandoObject objectToReturn = new ExpandoObject();
+                foreach (var filed in lstOfFieldsToWorkWith)
+                {
+                    var fieldValue = expenseGroup.GetType()
+                        .GetProperty(filed, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance).GetValue(expenseGroup, null);
+                    ((IDictionary<String, Object>)objectToReturn).Add(filed, fieldValue);
+
+                }
+
+                if (returnPartialExpense)
+                {
+                    var expenses = new List<object>();
+                    foreach (var expense in expenseGroup.Expenses)
+                    {
+                        expenses.Add(_expenseFactory.CreateDataShapedObject(expense, listOfExpenseFields));
+                    }
+
+                    ((IDictionary<String, Object>)objectToReturn).Add("expenses", expenses);
+                }
+                return objectToReturn;
             }
-            return null;
+            
         }
     }
 }
