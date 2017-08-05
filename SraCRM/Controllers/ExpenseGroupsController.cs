@@ -87,9 +87,9 @@ namespace SraCRM.Controllers
 
                 var urlHelper = new UrlHelper(Request);
                 var prevLink = page > 1 ? urlHelper.Link("ExpenseGroupsList",
-                    new { page = page - 1, pageSize = pageSize, sort = sort, status = status, userId = userId }) : "";
+                    new { page = page - 1, pageSize = pageSize, sort = sort,fields = fields, status = status, userId = userId }) : "";
                 var newLink = page < totalPages ? urlHelper.Link("ExpenseGroupsList", 
-                    new {page = page +1 , pageSize = pageSize , sort = sort, status = status, userId = userId}) : "";
+                    new {page = page +1 , pageSize = pageSize , sort = sort, fields = fields, status = status, userId = userId}) : "";
 
                 var paginationHeader = new
                 {
