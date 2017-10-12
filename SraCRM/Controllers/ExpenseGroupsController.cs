@@ -115,7 +115,7 @@ namespace SraCRM.Controllers
 
         [Route("ExpenseGroups/{id:int}")]
         [HttpGet]
-        public IHttpActionResult Get(int id)
+        public IHttpActionResult Get(int id, string fields = null)
         {
             try
             {

@@ -38,19 +38,6 @@ namespace LinhNguyen.Repository
             }
         }
 
-        //public RepositoryActionResult<CustomerModel> DoRegister(CustomerModel model)
-        //{
-        //    try
-        //    {
-        //        _ctx
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        throw;
-        //    }
-        //}
-
         public IQueryable<Customer> GetCustomers()
         {
             return _ctx.Customers;

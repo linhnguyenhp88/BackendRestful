@@ -26,6 +26,9 @@ namespace SraCRM
             config.Formatters.XmlFormatter.SupportedMediaTypes.Clear();
             config.Formatters.JsonFormatter.SerializerSettings.Formatting
                 = Newtonsoft.Json.Formatting.Indented;
+
+            // configure caching
+            config.MessageHandlers.Add(new CacheCow.Server.CachingHandler(config));
         }
 
         private static void EnableCrossSiteRequests(HttpConfiguration config)
