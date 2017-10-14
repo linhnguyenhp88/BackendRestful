@@ -103,40 +103,13 @@ namespace SraCRM.Controllers
         } 
 
 
-        [Route("expensegroups/{expenseGroupId}/expenses/{id}")]
-        [Route("expenses/{id}")]
+        [VersionedRoute("expensegroups/{expenseGroupId}/expenses/{id}",1)]
+        [VersionedRoute("expenses/{id}",1)]
         [HttpGet]
         public IHttpActionResult Get(int id, int? expenseGroupId = null, string fields = null)
         {
             try
-            {
-                //LinhNguyen.Repository.Entities.Expense.Entity.Expense expense = null;
-
-                //if (expenseGroupId == null)
-                //{
-                //    expense = _expenseRepository.Getexpense(id);
-                //}
-                //else
-                //{
-                //    var expensesForGroup = _expenseRepository.GetExpenses((int)expenseGroupId);
-
-                //    if (expensesForGroup != null)
-                //    {
-                //        expense = expensesForGroup.FirstOrDefault(eg => eg.Id == id);
-                //    }
-                //}
-
-                //if (expense != null)
-                //{
-                //    var returnValue = _expenseFactory.CreateExpense(expense);
-                //    return Ok(returnValue);
-                //}
-                //else
-                //{
-                //    return NotFound();
-                //}
-
-
+            {              
                 var lstOfFields = new List<string>();
 
                 if (fields == null)

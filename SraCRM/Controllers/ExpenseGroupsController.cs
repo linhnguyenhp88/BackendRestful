@@ -119,16 +119,36 @@ namespace SraCRM.Controllers
         {
             try
             {
-                var expenseGroup = _expenseTrackerRepository.GetExpenseGroup(id);
-                if (expenseGroup == null)
+                var includeExpenses = false;
+                var lstOfFields = new List<string>();
+
+                // we should include expenses when the fields-string contains "expenses"
+
+                if (fields != null)
                 {
-                    return NotFound();
+                    lstOfFields = fields.ToLower().Split(',').ToList();
+                    includeExpenses = lstOfFields.Any(x => x.Contains("expenses"));
+                }
+
+                LinhNguyen.Repository.Entities.Expense.Entity.ExpenseGroup expenseGroup;
+
+                if (includeExpenses)
+                {
+                    expenseGroup = _expenseTrackerRepository.GetExpenseGroupWithExpenses(id);
                 }
                 else
                 {
-                    return Ok(_expenseGroupFactory.CreateExpenseGroup(expenseGroup));
+                    expenseGroup = _expenseTrackerRepository.GetExpenseGroup(id);
                 }
-                
+
+                if (expenseGroup != null)
+                {
+                    return Ok(_expenseGroupFactory.CreateDataShapedDateObject(expenseGroup, lstOfFields));
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
             catch (Exception)
             {

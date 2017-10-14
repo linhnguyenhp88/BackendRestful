@@ -89,7 +89,7 @@ namespace LinhNguyen.Repository
 
         public ExpenseGroupStatus GetExpenseGroupStatus(int id)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public IQueryable<ExpenseGroupStatus> GetExpenseGroupStatuses()
@@ -99,17 +99,17 @@ namespace LinhNguyen.Repository
 
         public IQueryable<ExpenseGroup> GetExpenseGroupWithExpenses()
         {
-            throw new NotImplementedException();
+            return _ctx.ExpenseGroups.Include("Expenses");
         }
 
         public ExpenseGroup GetExpenseGroupWithExpenses(int id)
         {
-            throw new NotImplementedException();
+            return _ctx.ExpenseGroups.Include("Expenses").FirstOrDefault(eg => eg.Id == id);
         }
 
         public ExpenseGroup GetExpenseGroupWithExpenses(int id, string userId)
         {
-            throw new NotImplementedException();
+            return _ctx.ExpenseGroups.Include("Expenses").FirstOrDefault(eg => eg.Id == id && eg.UserId == userId);
         }
 
         public IQueryable<Expense> GetExpenses()
