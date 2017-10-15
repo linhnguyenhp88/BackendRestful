@@ -25,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,6 +46,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CacheCow.Common, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CacheCow.Common.1.2.3\lib\net40\CacheCow.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="CacheCow.Server, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CacheCow.Server.1.2.3\lib\net40\CacheCow.Server.dll</HintPath>
+    </Reference>
     <Reference Include="DependencyResolver, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DependencyResolver.1.0.0.3\lib\net40\DependencyResolver.dll</HintPath>
     </Reference>
@@ -269,6 +276,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\IQueryableExtensions.cs" />
+    <Compile Include="Helpers\VersionConstraint.cs" />
+    <Compile Include="Helpers\VersionedRoute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

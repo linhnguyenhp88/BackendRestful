@@ -1,0 +1,9 @@
+diff a/LinhNguyen.Repository/Entities/Expense.Entity/ExpenseGroupStatus.cs b/LinhNguyen.Repository/Entities/Expense.Entity/ExpenseGroupStatus.cs	(rejected hunks)
+@@ -16,7 +16,6 @@
+             ExpenseGroups = new HashSet<ExpenseGroup>();
+         }
+ 
+-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+         public int Id { get; set; }
+         [Required]
+         [StringLength(50)]

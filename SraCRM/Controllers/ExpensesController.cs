@@ -112,7 +112,7 @@ namespace SraCRM.Controllers
             {              
                 var lstOfFields = new List<string>();
 
-                if (fields == null)
+                if (fields != null)
                 {
                     lstOfFields = fields.ToLower().Split(',').ToList();
                 }
@@ -144,7 +144,55 @@ namespace SraCRM.Controllers
                 }
 
             }
-            catch (Exception)
+            catch (Exception ex)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+        [VersionedRoute("expensegroups/{expenseGroupId}/expenses/{id}", 2)]
+        [VersionedRoute("expenses/{id}", 2)]
+        [HttpGet]
+        public IHttpActionResult GetV2(int id, int? expenseGroupId = null, string fields = null)
+        {
+            try
+            {
+                var lstOfFields = new List<string>();
+
+                if (fields != null)
+                {
+                    lstOfFields = fields.ToLower().Split(',').ToList();
+                }
+                Expense expense = null;
+
+                if (expenseGroupId == null)
+                {
+                    expense = _expenseRepository.Getexpense(id);
+                }
+                else
+                {
+                    var expensesForGroup = _expenseRepository.GetExpenses((int)expenseGroupId);
+
+                    if (expensesForGroup != null)
+                    {
+                        expense = expensesForGroup.Where(eg => eg.Id == id).FirstOrDefault();
+                    }
+                }
+
+                if (expense != null)
+                {
+                    var returnValue = _expenseFactory.CreateDataShapedObject(expense, lstOfFields);
+
+                    return Ok(returnValue);
+                }
+                else
+                {
+                    return NotFound();
+                }
+
+            }
+            catch (Exception ex)
             {
 
                 return InternalServerError();
