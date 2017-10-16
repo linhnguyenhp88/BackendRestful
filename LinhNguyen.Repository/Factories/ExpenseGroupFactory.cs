@@ -47,9 +47,11 @@ namespace LinhNguyen.Repository.Factories
         public object CreateDataShapedDateObject(LinhNguyen.Repository.Entities.Expense.Entity.ExpenseGroup expenseGroup, List<string> lstFields)
             => CreateDataShapedDateObject(CreateExpenseGroup(expenseGroup), lstFields);
 
-        private object CreateDataShapedDateObject(LinhNguyen.DTO.Expense.ExpenseGroup expenseGroup, List<string> lstFields)
+        private object CreateDataShapedDateObject(LinhNguyen.DTO.Expense.ExpenseGroup expenseGroup, List<string> lstOfFields)
         {
-            var lstOfFieldsToWorkWith = new List<string>(lstFields);
+
+            // work with a new instance, as we'll manipulate this list in this method
+            List<string> lstOfFieldsToWorkWith = new List<string>(lstOfFields);
 
             if (!lstOfFieldsToWorkWith.Any())
             {
@@ -57,44 +59,68 @@ namespace LinhNguyen.Repository.Factories
             }
             else
             {
-                var listOfExpenseFields = lstOfFieldsToWorkWith.Where(x => x.Contains("expenses")).ToList();
-                bool returnPartialExpense = listOfExpenseFields.Any() && !listOfExpenseFields.Contains("expense");
 
+                // does it include any expense-related field?
+                var lstOfExpenseFields = lstOfFieldsToWorkWith.Where(f => f.Contains("expenses")).ToList();
+
+                // if one of those fields is "expenses", we need to ensure the FULL expense is returned.  If
+                // it's only subfields, only those subfields have to be returned.
+
+                bool returnPartialExpense = lstOfExpenseFields.Any() && !lstOfExpenseFields.Contains("expenses");
+
+                // if we don't want to return the full expense, we need to know which fields
                 if (returnPartialExpense)
                 {
-                    lstOfFieldsToWorkWith.RemoveRange(listOfExpenseFields);
-                    listOfExpenseFields = lstOfFieldsToWorkWith.Select(x => x.Substring(x.IndexOf(".") +1)).ToList();
+                    // remove all expense-related fields from the list of fields,
+                    // as we will use the CreateDateShapedObject function in ExpenseFactory
+                    // for that.
+
+                    lstOfFieldsToWorkWith.RemoveRange(lstOfExpenseFields);
+                    lstOfExpenseFields = lstOfExpenseFields.Select(f => f.Substring(f.IndexOf(".") + 1)).ToList();
+
                 }
                 else
                 {
-                    listOfExpenseFields.Remove("expenses");
-                    lstOfFieldsToWorkWith.RemoveRange(listOfExpenseFields);
+                    // we shouldn't return a partial expense, but the consumer might still have
+                    // asked for a subfield together with the main field, ie: expense,expense.id.  We 
+                    // need to remove those subfields in that case.
+
+                    lstOfExpenseFields.Remove("expenses");
+                    lstOfFieldsToWorkWith.RemoveRange(lstOfExpenseFields);
                 }
 
+                // create a new ExpandoObject & dynamically create the properties for this object
 
+                // if we have an expense
 
                 ExpandoObject objectToReturn = new ExpandoObject();
-                foreach (var filed in lstOfFieldsToWorkWith)
+                foreach (var field in lstOfFieldsToWorkWith)
                 {
-                    var fieldValue = expenseGroup.GetType()
-                        .GetProperty(filed, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance).GetValue(expenseGroup, null);
-                    ((IDictionary<String, Object>)objectToReturn).Add(filed, fieldValue);
+                    // need to include public and instance, b/c specifying a binding flag overwrites the
+                    // already-existing binding flags.
 
+                    var fieldValue = expenseGroup.GetType()
+                        .GetProperty(field, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
+                        .GetValue(expenseGroup, null);
+
+                    // add the field to the ExpandoObject
+                    ((IDictionary<String, Object>)objectToReturn).Add(field, fieldValue);
                 }
 
                 if (returnPartialExpense)
                 {
-                    var expenses = new List<object>();
+                    // add a list of expenses, and in that, add all those expenses
+                    List<object> expenses = new List<object>();
                     foreach (var expense in expenseGroup.Expenses)
                     {
-                        expenses.Add(_expenseFactory.CreateDataShapedObject(expense, listOfExpenseFields));
+                        expenses.Add(_expenseFactory.CreateDataShapedObject(expense, lstOfExpenseFields));
                     }
 
                     ((IDictionary<String, Object>)objectToReturn).Add("expenses", expenses);
                 }
+
                 return objectToReturn;
             }
-            
         }
     }
 }

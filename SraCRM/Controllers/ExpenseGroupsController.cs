@@ -28,7 +28,7 @@ namespace SraCRM.Controllers
 
         [Route("ExpenseGroups", Name = "ExpenseGroupsList")]
         [HttpGet]
-        public IHttpActionResult Get(string fields,string sort = "id", string status = null, string userId = null, 
+        public IHttpActionResult Get(string fields = null,string sort = "id", string status = null, string userId = null, 
             int page = 1, int pageSize = maxPageSize)
         {
             try

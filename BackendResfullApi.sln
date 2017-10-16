@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinhNguyen.DTO", "LinhNguye
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinhNguyen.Constants", "LinhNguyen.Constants\LinhNguyen.Constants.csproj", "{002921EE-A42E-42C3-B34B-933F268EBF68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClient", "WebClient\WebClient.csproj", "{89567EE9-089E-4193-8402-0ACE706C8419}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientMvc", "ClientMvc\ClientMvc.csproj", "{C8066B3A-200B-4F85-9C7C-8604BEC86EE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{002921EE-A42E-42C3-B34B-933F268EBF68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{002921EE-A42E-42C3-B34B-933F268EBF68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{002921EE-A42E-42C3-B34B-933F268EBF68}.Release|Any CPU.Build.0 = Release|Any CPU
-		{89567EE9-089E-4193-8402-0ACE706C8419}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{89567EE9-089E-4193-8402-0ACE706C8419}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{89567EE9-089E-4193-8402-0ACE706C8419}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{89567EE9-089E-4193-8402-0ACE706C8419}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8066B3A-200B-4F85-9C7C-8604BEC86EE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8066B3A-200B-4F85-9C7C-8604BEC86EE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8066B3A-200B-4F85-9C7C-8604BEC86EE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8066B3A-200B-4F85-9C7C-8604BEC86EE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
