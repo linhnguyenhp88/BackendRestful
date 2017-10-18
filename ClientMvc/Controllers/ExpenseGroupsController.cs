@@ -71,17 +71,34 @@ namespace ClientMvc.Controllers
 
         // POST: ExpenseGroups/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(ExpenseGroup expenseGroup)
         {
             try
             {
                 // TODO: Add insert logic here
+                var client = ExpenseTrackerHttpClient.GetClient();
 
+                expenseGroup.ExpenseGroupStatusId = 1;
+                expenseGroup.UserId = @"https://expensetrackeridsrv3/embedded_1";
+
+                var serializedItemToCreate = JsonConvert.SerializeObject(expenseGroup);
+                var response = await client.PostAsync("api/ExpenseGroups", new StringContent
+                    (serializedItemToCreate,System.Text.Encoding.Unicode, "application/json"));
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return Content("An error occurred");
+                }
                 return RedirectToAction("Index");
             }
             catch
             {
-                return View();
+                return Content("An error occurred");
             }
         }
 
