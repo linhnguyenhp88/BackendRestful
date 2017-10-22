@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SraCRM", "SraCRM\SraCRM.csproj", "{505385A7-C5EB-4149-8421-35FCC2EC6DC3}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinhNguyen.Constants", "LinhNguyen.Constants\LinhNguyen.Constants.csproj", "{002921EE-A42E-42C3-B34B-933F268EBF68}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientMvc", "ClientMvc\ClientMvc.csproj", "{C8066B3A-200B-4F85-9C7C-8604BEC86EE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication", "WebApplication\WebApplication.csproj", "{4021AAA2-5E02-43B6-9485-B11E43D39710}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{C8066B3A-200B-4F85-9C7C-8604BEC86EE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8066B3A-200B-4F85-9C7C-8604BEC86EE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8066B3A-200B-4F85-9C7C-8604BEC86EE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4021AAA2-5E02-43B6-9485-B11E43D39710}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4021AAA2-5E02-43B6-9485-B11E43D39710}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4021AAA2-5E02-43B6-9485-B11E43D39710}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4021AAA2-5E02-43B6-9485-B11E43D39710}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,5 +11,7 @@ namespace ClientMvc.Models
         public IEnumerable<ExpenseGroup> ExpenseGroups { get; set; }
 
         public IEnumerable<ExpenseGroupStatus> ExpenseGroupStatusses { get; set; }
+
+        public ExpenseGroup ExpenseGroup { get; set;}
     }
 }

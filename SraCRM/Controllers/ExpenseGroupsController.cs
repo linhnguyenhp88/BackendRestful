@@ -180,7 +180,7 @@ namespace SraCRM.Controllers
 
                 return BadRequest();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 return InternalServerError();

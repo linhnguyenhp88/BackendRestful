@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
@@ -17,43 +18,52 @@ namespace ClientMvc.Controllers
         // GET: ExpenseGroups
         public async Task<ActionResult> Index()
         {
-            var client = ExpenseTrackerHttpClient.GetClient();
-
-            var model = new ExpenseGroupsViewModel();
-
-            var egsResponse = await client.GetAsync("api/ExpenseGroupStatusses");
-
-            if (egsResponse.IsSuccessStatusCode)
+            try
             {
-                string egsContent = await egsResponse.Content.ReadAsStringAsync();
-                var lstExpenseGroupStatusses = JsonConvert
-                    .DeserializeObject<IEnumerable<ExpenseGroupStatus>>(egsContent);
+                var client = ExpenseTrackerHttpClient.GetClient();
 
-                model.ExpenseGroupStatusses = lstExpenseGroupStatusses;
+                var model = new ExpenseGroupsViewModel();
+
+                var egsResponse = await client.GetAsync("api/ExpenseGroupStatusses");
+
+                if (egsResponse.IsSuccessStatusCode)
+                {
+                    string egsContent = await egsResponse.Content.ReadAsStringAsync();
+                    var lstExpenseGroupStatusses = JsonConvert
+                        .DeserializeObject<IEnumerable<ExpenseGroupStatus>>(egsContent);
+
+                    model.ExpenseGroupStatusses = lstExpenseGroupStatusses;
+                }
+                else
+                {
+                    return Content("An error occurred.");
+                }
+
+
+                HttpResponseMessage response = await client.GetAsync("api/ExpenseGroups");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string content = await response.Content.ReadAsStringAsync();
+                    var lstExpenseGroups = JsonConvert.DeserializeObject<IEnumerable<ExpenseGroup>>(content);
+
+                    model.ExpenseGroups = lstExpenseGroups;
+
+                }
+                else
+                {
+                    return Content("An error occurred.");
+                }
+
+
+                return View(model);
             }
-            else
+            catch (TaskCanceledException ex)
             {
-                return Content("An error occurred.");
+
+                return Content($"{ex}");
             }
-
-
-            HttpResponseMessage response = await client.GetAsync("api/ExpenseGroups");
-
-            if (response.IsSuccessStatusCode)
-            {
-                string content = await response.Content.ReadAsStringAsync();
-                var lstExpenseGroups = JsonConvert.DeserializeObject<IEnumerable<ExpenseGroup>>(content);
-
-                model.ExpenseGroups = lstExpenseGroups;
-
-            }
-            else
-            {
-                return Content("An error occurred.");
-            }
-
-
-            return View(model);
+           
 
         }
 
@@ -83,18 +93,17 @@ namespace ClientMvc.Controllers
                 expenseGroup.UserId = @"https://expensetrackeridsrv3/embedded_1";
 
                 var serializedItemToCreate = JsonConvert.SerializeObject(expenseGroup);
-                var response = await client.PostAsync("api/ExpenseGroups", new StringContent
+                var response = await client.PostAsync("api/ExpenseGroup", new StringContent
                     (serializedItemToCreate,System.Text.Encoding.Unicode, "application/json"));
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction(nameof(Index));
                 }
                 else
                 {
                     return Content("An error occurred");
-                }
-                return RedirectToAction("Index");
+                }               
             }
             catch
             {
@@ -103,46 +112,102 @@ namespace ClientMvc.Controllers
         }
 
         // GET: ExpenseGroups/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            var client = ExpenseTrackerHttpClient.GetClient();
+
+            HttpResponseMessage responseMessage = await client.GetAsync("api/ExpenseGroups/" + id);
+            string content = await responseMessage.Content.ReadAsStringAsync();
+
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var model = JsonConvert.DeserializeObject<ExpenseGroup>(content);
+                return View(model);
+            }
+
+            return Content($"An error occurred {content}");
         }
 
         // POST: ExpenseGroups/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(int id, ExpenseGroup expenseGroup)
         {
             try
             {
                 // TODO: Add update logic here
+                var client = ExpenseTrackerHttpClient.GetClient();
 
+                var serializedItemToUpdate = JsonConvert.SerializeObject(expenseGroup);
+
+                var response = await client.PutAsync("api/ExpenseGroup" + id, new
+                    StringContent(serializedItemToUpdate, System.Text.Encoding.Unicode, "application/json"));
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return Content("An error occurred");
+                }
                 return RedirectToAction("Index");
             }
-            catch
+            catch(Exception ex)
             {
-                return View();
+                return Content($"An error occurred ");
             }
         }
 
         // GET: ExpenseGroups/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var client = ExpenseTrackerHttpClient.GetClient();
+            var model = new ExpenseGroupsViewModel();
+            HttpResponseMessage responseExpenseGroup = await client.GetAsync("api/ExpenseGroups" + id);
+
+            if (responseExpenseGroup.IsSuccessStatusCode)
+            {
+                var content = await responseExpenseGroup.Content.ReadAsStringAsync();
+                var itemExpensGroup = JsonConvert.DeserializeObject<ExpenseGroup>(content);
+                model.ExpenseGroup = itemExpensGroup;
+            }
+            else
+            {
+                return Content("An error occurred");
+            }
+
+
+            return View(model);
         }
 
         // POST: ExpenseGroups/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public async Task<ActionResult> Delete(int id, FormCollection collection)
         {
             try
             {
                 // TODO: Add delete logic here
+                var client = ExpenseTrackerHttpClient.GetClient();
+                var response = await client.DeleteAsync("api/ExpenseGroups" + id);
 
-                return RedirectToAction("Index");
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return Content("An error occerred");
+                }
             }
-            catch
+            catch(Exception ex)
             {
-                return View();
+                return Content("An error occerred");
             }
         }
     }
