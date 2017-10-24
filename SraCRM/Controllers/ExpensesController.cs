@@ -90,8 +90,22 @@ namespace SraCRM.Controllers
                 var expensesResult = expenses.ApplySort(sort)
                     .Skip(pageSize * (page - 1))
                     .Take(pageSize)
-                    .ToList()
-                    .Select(exp => _expenseFactory.CreateDataShapedObject(exp, lstOfFielfs));
+
+                    .Select(exp => _expenseFactory.CreateDataShapedObject(exp, lstOfFielfs)).ToList();
+
+                //////////////////////////////////
+                var l = expenses
+                    .Select(exp => new { exp.Amount, exp.Date })
+                    .Skip(pageSize * (page - 1))
+                    .Take(pageSize)
+                    .ApplySort(sort)
+                    .ToList();
+
+                foreach (var item in l)
+                {
+                    // Create DTO
+                }
+                //////////////////////////////////
 
                 return Ok(expensesResult);
             }
