@@ -1,6 +1,8 @@
 ﻿@model  ClientMvc.Models.ExpenseGroupsViewModel
+@using PagedList.Mvc;
 
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
 
 @{
     ViewBag.Title = "Index";
@@ -49,3 +51,8 @@
     }
 
 </table>
+
+@(Model.PagingInfo.CurrentPage) of @Model.PagingInfo.TotalPages
+
+@Html.PagedListPager(Model.ExpenseGroups, page => Url.Action("Index",
+    new { page }))

@@ -26,7 +26,7 @@ namespace ClientMvc.Controllers
         }
 
         // GET: Expenses/Create
-        public ActionResult Create()
+        public ActionResult Create(int expenseGroupId)
         {
             return View();
         }
@@ -116,17 +116,26 @@ namespace ClientMvc.Controllers
 
         // POST: Expenses/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public async Task <ActionResult> Delete(int expenseGroupId, int id)
         {
             try
             {
                 // TODO: Add delete logic here
+                var client = ExpenseTrackerHttpClient.GetClient();
+                var response = await client.DeleteAsync("api/expenses" + id);
 
-                return RedirectToAction("Index");
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Details", "ExpenseGroups", new { id = expenseGroupId });
+                }
+                else
+                {
+                    return Content("An error occurred");
+                }
             }
             catch
             {
-                return View();
+                return Content("An error occurred");
             }
         }
     }

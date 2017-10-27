@@ -16,7 +16,7 @@ namespace ClientMvc.Controllers
     public class ExpenseGroupsController : Controller
     {
         // GET: ExpenseGroups
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(int? page = 1)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace ClientMvc.Controllers
 
                 if (egsResponse.IsSuccessStatusCode)
                 {
-                    string egsContent = await egsResponse.Content.ReadAsStringAsync();
+                    var egsContent = await egsResponse.Content.ReadAsStringAsync();
                     var lstExpenseGroupStatusses = JsonConvert
                         .DeserializeObject<IEnumerable<ExpenseGroupStatus>>(egsContent);
 
@@ -40,11 +40,11 @@ namespace ClientMvc.Controllers
                 }
 
 
-                HttpResponseMessage response = await client.GetAsync("api/ExpenseGroups");
+                HttpResponseMessage response = await client.GetAsync("api/ExpenseGroups?sort=expensegroupstatusid,title&page="+page+"&pagesize=5");
 
                 if (response.IsSuccessStatusCode)
                 {
-                    string content = await response.Content.ReadAsStringAsync();
+                    var content = await response.Content.ReadAsStringAsync();
                     var lstExpenseGroups = JsonConvert.DeserializeObject<IEnumerable<ExpenseGroup>>(content);
 
                     model.ExpenseGroups = lstExpenseGroups;
